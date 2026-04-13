@@ -1,0 +1,42 @@
+{
+  "nav": {
+    "signOut": "Sign Out",
+    "signIn": "Sign In"
+  },
+  "home": {
+    "title": "Invest in Premium",
+    "titleRealEstate": "Real Estate",
+    "subtitle": "Access institutional-quality property investments. Explore officially KYC-approved and audited real estate opportunities on our marketplace.",
+    "searchPlaceholder": "Search properties or locations...",
+    "all": "All",
+    "realEstate": "Real Estate",
+    "land": "Land",
+    "loading": "Loading marketplace listings...",
+    "noProperties": "No properties found",
+    "noPropertiesDesc": "There are currently no active funding opportunities matching your criteria. Try adjusting your filters.",
+    "targetRaise": "Target Raise",
+    "fundingActive": "Funding active",
+    "published": "Published",
+    "confidential": "Confidential Location",
+    "invest": "Invest",
+    "verified": "Verified"
+  },
+  "auth": {
+    "welcome": "Welcome back",
+    "welcomeSub": "Securely access your investments, projects, and administrative panels.",
+    "emailLabel": "Email Address",
+    "passwordLabel": "Password",
+    "signInBtn": "Sign In & Connect",
+    "noAccount": "Don't have an account?",
+    "requestAccess": "Request Access",
+    "secureGateway": "Your Secure Gateway to Premium Wealth",
+    "join": "Join the Elite",
+    "startJourney": "Start your journey toward premium wealth and seamless asset management.",
+    "signUpForm": "Account Registration",
+    "roleLabel": "Select Your Role",
+    "fullName": "Full Name",
+    "companyName": "Company Name",
+    "submitRegistration": "Submit Registration",
+    "alreadyHaveAccount": "Already have an account?"
+  }
+}

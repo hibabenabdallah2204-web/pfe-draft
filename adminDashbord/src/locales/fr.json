@@ -1,0 +1,42 @@
+{
+  "nav": {
+    "signOut": "Se déconnecter",
+    "signIn": "Se connecter"
+  },
+  "home": {
+    "title": "Investissez dans",
+    "titleRealEstate": "l'Immobilier Premium",
+    "subtitle": "Accédez à des investissements immobiliers de qualité institutionnelle. Explorez des opportunités approuvées KYC et auditées sur notre plateforme.",
+    "searchPlaceholder": "Rechercher des biens ou emplacements...",
+    "all": "Tout",
+    "realEstate": "Immobilier",
+    "land": "Terrains",
+    "loading": "Chargement des projets...",
+    "noProperties": "Aucun bien trouvé",
+    "noPropertiesDesc": "Il n'y a actuellement aucune opportunité de financement active. Essayez d'ajuster vos filtres.",
+    "targetRaise": "Cible de levée",
+    "fundingActive": "Financement actif",
+    "published": "Publié",
+    "confidential": "Emplacement Confidentiel",
+    "invest": "Investir",
+    "verified": "Vérifié"
+  },
+  "auth": {
+    "welcome": "Bon retour",
+    "welcomeSub": "Accédez en toute sécurité à vos investissements, projets et panneaux d'administration.",
+    "emailLabel": "Adresse Email",
+    "passwordLabel": "Mot de passe",
+    "signInBtn": "Se connecter",
+    "noAccount": "Vous n'avez pas de compte ?",
+    "requestAccess": "Demander l'accès",
+    "secureGateway": "Votre Passerelle vers la Gestion Premium",
+    "join": "Rejoignez l'Élite",
+    "startJourney": "Commencez votre voyage vers la création de richesse et la gestion d'actifs en douceur.",
+    "signUpForm": "Création de compte",
+    "roleLabel": "Sélectionnez votre rôle",
+    "fullName": "Nom complet",
+    "companyName": "Nom de l'entreprise",
+    "submitRegistration": "Soumettre la demande",
+    "alreadyHaveAccount": "Déjà un compte ?"
+  }
+}
