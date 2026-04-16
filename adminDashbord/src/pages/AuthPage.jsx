@@ -908,6 +908,32 @@ export default function AuthPage() {
               </button>
             </form>
           )}
+
+          <div className="mt-8 text-center text-sm text-slate-500">
+            {mode === "login" ? (
+              <p>
+                {t("auth.noAccount") || "Don't have an account?"}{" "}
+                <button
+                  type="button"
+                  onClick={() => { setMode("register"); setMessage(""); }}
+                  className="font-semibold text-indigo-600 hover:text-fuchsia-600 transition-colors underline underline-offset-2"
+                >
+                  {t("auth.signUpLink") || "Sign Up"}
+                </button>
+              </p>
+            ) : (
+              <p>
+                {t("auth.alreadyHaveAccount") || "Already have an account?"}{" "}
+                <button
+                  type="button"
+                  onClick={() => { setMode("login"); setMessage(""); }}
+                  className="font-semibold text-indigo-600 hover:text-fuchsia-600 transition-colors underline underline-offset-2"
+                >
+                  {t("auth.signInLink") || "Sign In"}
+                </button>
+              </p>
+            )}
+          </div>
         </div>
       </div>
     </div>

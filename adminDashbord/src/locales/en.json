@@ -37,6 +37,8 @@
     "fullName": "Full Name",
     "companyName": "Company Name",
     "submitRegistration": "Submit Registration",
-    "alreadyHaveAccount": "Already have an account?"
+    "alreadyHaveAccount": "Already have an account?",
+    "signUpLink": "Sign Up",
+    "signInLink": "Sign In"
   }
 }
