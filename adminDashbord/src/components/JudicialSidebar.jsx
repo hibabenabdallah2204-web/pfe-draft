@@ -29,7 +29,7 @@ function SidebarCard({ item }) {
       className={({ isActive }) =>
         `block w-full rounded-2xl border p-4 transition-all duration-200 ${
           isActive
-            ? "border-amber-300/60 bg-white/12 shadow-lg shadow-amber-500/10"
+            ? "border-indigo-300/60 bg-white/12 shadow-lg shadow-fuchsia-500/10"
             : "border-white/10 bg-white/5 hover:bg-white/10"
         }`
       }
@@ -39,7 +39,7 @@ function SidebarCard({ item }) {
           <div
             className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-xl ${
               isActive
-                ? "bg-gradient-to-br from-amber-500 to-orange-500 text-white"
+                ? "bg-gradient-to-br from-indigo-500 to-fuchsia-500 text-white"
                 : "bg-white/10 text-white"
             }`}
           >
@@ -60,7 +60,7 @@ function SidebarCard({ item }) {
 
 export default function JudicialSidebar() {
   return (
-    <aside className="w-full bg-gradient-to-br from-slate-900 via-amber-900 to-orange-900 px-5 py-6 lg:min-h-screen lg:w-[380px] lg:px-6 lg:py-8">
+    <aside className="w-full bg-gradient-to-br from-indigo-900 via-violet-800 to-fuchsia-900 px-5 py-6 lg:min-h-screen lg:w-[380px] lg:px-6 lg:py-8">
       <div className="flex h-full flex-col rounded-[32px] border border-white/10 bg-white/5 p-6 backdrop-blur-sm">
         <div>
           <div className="inline-flex items-center gap-2 rounded-2xl bg-white/10 px-4 py-2 text-sm font-semibold text-white/90">
