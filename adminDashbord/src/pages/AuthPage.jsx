@@ -17,24 +17,27 @@ import {
   ArrowRight,
 } from "lucide-react";
 
-const allowedRoles = [
-  "Visitor (Visiteur)",
-  "Investor (Investisseur)",
-  "Promoter (Promoteur individuel)",
-  "Real Estate Agency (Agence)",
-  "Financial Manager (Gestionnaire Fin)",
-  "Platform Manager (Gest Plat)",
-  "Judicial Agent (Agent Judiciaire)",
-  "Customer Support (Support)"
-];
+const roleMapping = {
+  "Visitor (Visiteur)": "VISITOR",
+  "Investor (Investisseur)": "INVESTOR",
+  "Promoter (Promoteur individuel)": "PROMOTER",
+  "Real Estate Agency (Agence)": "AGENCY",
+  "Financial Manager (Gestionnaire Fin)": "FINANCE",
+  "Platform Manager (Gest Plat)": "PLATFORM",
+  "Judicial Agent (Agent Judiciaire)": "JUDICIAL",
+  "Customer Support (Support)": "SUPPORT"
+};
+
+const allowedRoles = Object.keys(roleMapping);
 
 function getRoleIcon(role) {
   switch (role) {
-    case "Normal User":
+    case "Investor (Investisseur)":
+    case "Visitor (Visiteur)":
       return <User size={18} />;
-    case "Real Estate Developer":
+    case "Promoter (Promoteur individuel)":
       return <Briefcase size={18} />;
-    case "Real Estate Agent / Agency":
+    case "Real Estate Agency (Agence)":
       return <Building2 size={18} />;
     default:
       return <User size={18} />;
@@ -98,10 +101,6 @@ export default function AuthPage() {
       ...prev,
       [field]: value,
     }));
-  };
-
-  const handleLoginChange = (e) => {
-    setLoginData({ ...loginData, [e.target.name]: e.target.value });
   };
 
   const handleAgencyDocumentChange = (field, file) => {
@@ -182,8 +181,7 @@ export default function AuthPage() {
     } catch (error) {
       setMessageType("error");
       setMessage(
-        error?.response?.data?.message ||
-        "Login failed. Please check your credentials."
+        error?.role === "Admin" ? "Error" : t("auth.errors.loginFailed")
       );
     } finally {
       setLoading(false);
@@ -197,13 +195,13 @@ export default function AuthPage() {
 
     if (!allowedRoles.includes(registerData.role)) {
       setMessageType("error");
-      setMessage("Please select a valid role.");
+      setMessage(t("auth.errors.invalidRole"));
       return;
     }
 
     if (registerData.password !== registerData.confirmPassword) {
       setMessageType("error");
-      setMessage("Password and confirm password do not match.");
+      setMessage(t("auth.errors.passMismatch"));
       return;
     }
 
@@ -223,7 +221,7 @@ export default function AuthPage() {
         !registerData.password.trim()
       ) {
         setMessageType("error");
-        setMessage("Please fill in all required fields.");
+        setMessage(t("auth.errors.fillFields"));
         return;
       }
     }
@@ -237,7 +235,7 @@ export default function AuthPage() {
         !registerData.password.trim()
       ) {
         setMessageType("error");
-        setMessage("Please fill in all required fields.");
+        setMessage(t("auth.errors.fillFields"));
         return;
       }
     }
@@ -256,13 +254,13 @@ export default function AuthPage() {
 
       if (!requiredAgencyFields) {
         setMessageType("error");
-        setMessage("Please complete all required agency fields.");
+        setMessage(t("auth.errors.completeAgency"));
         return;
       }
 
       if (!validateAgencyDocuments()) {
         setMessageType("error");
-        setMessage("All agency identification documents are required.");
+        setMessage(t("auth.errors.missingDocs"));
         return;
       }
     }
@@ -295,7 +293,7 @@ export default function AuthPage() {
       setMessageType("success");
       setMessage(
         data?.message ||
-        "Account request submitted successfully. Please verify your email."
+        t("auth.errors.regSub")
       );
 
       resetRegisterForm();
@@ -304,7 +302,7 @@ export default function AuthPage() {
       setMessageType("error");
       setMessage(
         error?.response?.data?.message ||
-        "Registration failed. Please try again."
+        t("auth.errors.regFailed")
       );
     } finally {
       setLoading(false);
@@ -318,9 +316,9 @@ export default function AuthPage() {
         <div className="absolute -top-32 -left-32 h-[500px] w-[500px] rounded-full bg-fuchsia-600/20 blur-3xl"></div>
         <div className="absolute bottom-0 right-0 h-[600px] w-[600px] rounded-full bg-indigo-500/20 blur-3xl"></div>
         
-        <div className="relative z-10 flex flex-col justify-between p-16 w-full">
+        <div className="relative z-10 flex flex-col justify-between p-16 w-full rtl:text-right">
           <div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 rtl:flex-row-reverse">
               <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-500 to-fuchsia-500 text-white shadow-xl shadow-fuchsia-500/30">
                 <Building2 size={24} />
               </div>
@@ -328,7 +326,7 @@ export default function AuthPage() {
                 MicroInvest
               </span>
             </div>
-            <div className="mt-6 flex">
+            <div className="mt-6 flex rtl:flex-row-reverse">
               <LanguageSwitcher />
             </div>
           </div>
@@ -342,7 +340,7 @@ export default function AuthPage() {
             </p>
           </div>
           
-          <div className="text-sm font-medium text-indigo-200/60">
+          <div className="text-sm font-medium text-indigo-200/60 rtl:text-right">
             &copy; 2026 MicroInvest Platform. All rights reserved.
           </div>
         </div>
@@ -350,8 +348,8 @@ export default function AuthPage() {
 
       <div className="flex w-full items-center justify-center p-6 lg:w-1/2 lg:p-12">
         <div className="w-full max-w-[440px]">
-          <div className="mb-10 lg:hidden flex justify-between items-center">
-            <div className="flex items-center gap-3">
+          <div className="mb-10 lg:hidden flex justify-between items-center rtl:flex-row-reverse">
+            <div className="flex items-center gap-3 rtl:flex-row-reverse">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-fuchsia-500 text-white shadow-lg">
                 <Building2 size={20} />
               </div>
@@ -399,7 +397,7 @@ export default function AuthPage() {
                   onChange={(e) =>
                     setLoginData({ ...loginData, email: e.target.value })
                   }
-                  className="w-full outline-none bg-transparent"
+                  className="w-full outline-none bg-transparent rtl:text-right"
                   required
                 />
               </FieldWrapper>
@@ -417,7 +415,7 @@ export default function AuthPage() {
                   onChange={(e) =>
                     setLoginData({ ...loginData, password: e.target.value })
                   }
-                  className="w-full outline-none bg-transparent"
+                  className="w-full outline-none bg-transparent rtl:text-right"
                   required
                 />
               </FieldWrapper>
@@ -425,16 +423,27 @@ export default function AuthPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-indigo-500 to-fuchsia-500 py-3.5 text-sm font-bold text-white shadow-lg shadow-fuchsia-500/30 transition hover:scale-[1.02] hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-fuchsia-500/20 disabled:opacity-70"
+                className="flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-indigo-500 to-fuchsia-500 py-3.5 text-sm font-bold text-white shadow-lg shadow-fuchsia-500/30 transition hover:scale-[1.02] hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-fuchsia-500/20 disabled:opacity-70 rtl:flex-row-reverse"
               >
                 {loading ? (
                   <div className="h-5 w-5 animate-spin rounded-full border-2 border-white/30 border-t-white"></div>
                 ) : (
                   <>
-                    {t("auth.signInBtn")} <ArrowRight size={18} />
+                    {t("auth.signInBtn")} <ArrowRight size={18} className="rtl:rotate-180" />
                   </>
                 )}
               </button>
+
+              <div className="mt-8 text-center text-sm font-medium">
+                <span className="text-slate-500">{t("auth.noAccount")} </span>
+                <button
+                  type="button"
+                  onClick={() => { setMode("register"); setMessage(""); }}
+                  className="text-indigo-600 hover:text-indigo-700 focus:underline focus:outline-none"
+                >
+                  {t("auth.signUpLink")}
+                </button>
+              </div>
             </form>
           ) : (
             <form onSubmit={handleRegisterSubmit} className="space-y-5">
@@ -446,15 +455,18 @@ export default function AuthPage() {
                 <select
                   value={registerData.role}
                   onChange={(e) => handleRegisterChange("role", e.target.value)}
-                  className="w-full bg-transparent outline-none"
+                  className="w-full bg-transparent outline-none rtl:text-right"
                   required
                 >
                   <option value="">{t("auth.roleLabel")}</option>
-                  {allowedRoles.map((role) => (
-                    <option key={role} value={role}>
-                      {role}
-                    </option>
-                  ))}
+                  {allowedRoles.map((role) => {
+                    const key = roleMapping[role];
+                    return (
+                      <option key={role} value={role}>
+                         {t(`auth.roles.${key}`)}
+                      </option>
+                    );
+                  })}
                 </select>
               </FieldWrapper>
 
@@ -472,7 +484,7 @@ export default function AuthPage() {
                       onChange={(e) =>
                         handleRegisterChange("fullName", e.target.value)
                       }
-                      className="w-full outline-none bg-transparent"
+                      className="w-full outline-none bg-transparent rtl:text-right"
                       required
                     />
                   </FieldWrapper>
@@ -489,7 +501,521 @@ export default function AuthPage() {
                       onChange={(e) =>
                         handleRegisterChange("email", e.target.value)
                       }
-                      className="w-full outline-none bg-transparent"
+                      className="w-full outline-none bg-transparent rtl:text-right"
+                      required
+                    />
+                  </FieldWrapper>
+
+                  <FieldWrapper
+                    label={t("auth.passwordLabel")}
+                    icon={<Lock size={18} />}
+                    required
+                  >
+                    <input
+                      type="password"
+                      placeholder="••••••••"
+                      value={registerData.password}
+                      onChange={(e) =>
+                        handleRegisterChange("password", e.target.value)
+                      }
+                      className="w-full outline-none bg-transparent rtl:text-right"
+                      required
+                    />
+                  </FieldWrapper>
+
+                  <FieldWrapper
+                    label={t("auth.confirmPassword")}
+                    icon={<BadgeCheck size={18} />}
+                    required
+                  >
+                    <input
+                      type="password"
+                      placeholder="••••••••"
+                      value={registerData.confirmPassword}
+                      onChange={(e) =>
+                        handleRegisterChange("confirmPassword", e.target.value)
+                      }
+                      className="w-full outline-none bg-transparent rtl:text-right"
+                      required
+                    />
+                  </FieldWrapper>
+                </>
+              )}
+
+              {registerData.role === "Promoter (Promoteur individuel)" && (
+                <>
+                  <FieldWrapper
+                    label={t("auth.fullName")}
+                    icon={<User size={18} />}
+                    required
+                  >
+                    <input
+                      type="text"
+                      placeholder="Promoter Full Name"
+                      value={registerData.fullName}
+                      onChange={(e) =>
+                        handleRegisterChange("fullName", e.target.value)
+                      }
+                      className="w-full outline-none bg-transparent rtl:text-right"
+                      required
+                    />
+                  </FieldWrapper>
+
+                  <FieldWrapper
+                    label={t("auth.companyName")}
+                    icon={<Building2 size={18} />}
+                    required
+                  >
+                    <input
+                      type="text"
+                      placeholder="Real Estate Company"
+                      value={registerData.companyName}
+                      onChange={(e) =>
+                        handleRegisterChange("companyName", e.target.value)
+                      }
+                      className="w-full outline-none bg-transparent rtl:text-right"
+                      required
+                    />
+                  </FieldWrapper>
+
+                  <FieldWrapper
+                    label={t("auth.emailLabel")}
+                    icon={<Mail size={18} />}
+                    required
+                  >
+                    <input
+                      type="email"
+                      placeholder="promoter@company.com"
+                      value={registerData.email}
+                      onChange={(e) =>
+                        handleRegisterChange("email", e.target.value)
+                      }
+                      className="w-full outline-none bg-transparent rtl:text-right"
+                      required
+                    />
+                  </FieldWrapper>
+
+                  <FieldWrapper
+                    label={t("auth.phoneLabel")}
+                    icon={<Phone size={18} />}
+                    required
+                  >
+                    <input
+                      type="tel"
+                      placeholder="+216 12 345 678"
+                      value={registerData.phone}
+                      onChange={(e) =>
+                        handleRegisterChange("phone", e.target.value)
+                      }
+                      className="w-full outline-none bg-transparent rtl:text-right"
+                      required
+                    />
+                  </FieldWrapper>
+
+                  <FieldWrapper
+                    label={t("auth.passwordLabel")}
+                    icon={<Lock size={18} />}
+                    required
+                  >
+                    <input
+                      type="password"
+                      placeholder="••••••••"
+                      value={registerData.password}
+                      onChange={(e) =>
+                        handleRegisterChange("password", e.target.value)
+                      }
+                      className="w-full outline-none bg-transparent rtl:text-right"
+                      required
+                    />
+                  </FieldWrapper>
+
+                  <FieldWrapper
+                    label={t("auth.confirmPassword")}
+                    icon={<BadgeCheck size={18} />}
+                    required
+                  >
+                    <input
+                      type="password"
+                      placeholder="••••••••"
+                      value={registerData.confirmPassword}
+                      onChange={(e) =>
+                        handleRegisterChange("confirmPassword", e.target.value)
+                       }
+                      className="w-full outline-none bg-transparent rtl:text-right"
+                      required
+                    />
+                  </FieldWrapper>
+                </>
+              )}
+
+              {registerData.role === "Real Estate Agency (Agence)" && (
+                <>
+                  <FieldWrapper
+                    label={t("auth.agencyName")}
+                    icon={<Building2 size={18} />}
+                    required
+                  >
+                    <input
+                      type="text"
+                      placeholder="Agency Official Name"
+                      value={registerData.agencyName}
+                      onChange={(e) =>
+                        handleRegisterChange("agencyName", e.target.value)
+                      }
+                      className="w-full outline-none bg-transparent rtl:text-right"
+                      required
+                    />
+                  </FieldWrapper>
+
+                  <FieldWrapper
+                    label={t("auth.managerName")}
+                    icon={<User size={18} />}
+                    required
+                  >
+                    <input
+                      type="text"
+                      placeholder="Main Manager Full Name"
+                      value={registerData.managerName}
+                      onChange={(e) =>
+                        handleRegisterChange("managerName", e.target.value)
+                      }
+                      className="w-full outline-none bg-transparent rtl:text-right"
+                      required
+                    />
+                  </FieldWrapper>
+
+                  <FieldWrapper
+                    label={t("auth.emailLabel")}
+                    icon={<Mail size={18} />}
+                    required
+                  >
+                    <input
+                      type="email"
+                      placeholder="contact@agency.com"
+                      value={registerData.email}
+                      onChange={(e) =>
+                        handleRegisterChange("email", e.target.value)
+                      }
+                      className="w-full outline-none bg-transparent rtl:text-right"
+                      required
+                    />
+                  </FieldWrapper>
+
+                  <FieldWrapper
+                    label={t("auth.phoneLabel")}
+                    icon={<Phone size={18} />}
+                    required
+                  >
+                    <input
+                      type="tel"
+                      placeholder="+216 12 345 678"
+                      value={registerData.phone}
+                      onChange={(e) =>
+                        handleRegisterChange("phone", e.target.value)
+                      }
+                      className="w-full outline-none bg-transparent rtl:text-right"
+                      required
+                    />
+                  </FieldWrapper>
+
+                  <FieldWrapper
+                    label={t("auth.addressLabel")}
+                    icon={<MapPin size={18} />}
+                    required
+                  >
+                    <input
+                      type="text"
+                      placeholder="Agency Physical Address"
+                      value={registerData.address}
+                      onChange={(e) =>
+                        handleRegisterChange("address", e.target.value)
+                      }
+                      className="w-full outline-none bg-transparent rtl:text-right"
+                      required
+                    />
+                  </FieldWrapper>
+
+                  <FieldWrapper
+                    label={t("auth.commRegNum")}
+                    icon={<FileText size={18} />}
+                    required
+                  >
+                    <input
+                      type="text"
+                      placeholder="RC-12345678"
+                      value={registerData.commercialRegistrationNumber}
+                      onChange={(e) =>
+                        handleRegisterChange(
+                          "commercialRegistrationNumber",
+                          e.target.value
+                        )
+                      }
+                      className="w-full outline-none bg-transparent rtl:text-right"
+                      required
+                    />
+                  </FieldWrapper>
+
+                  <FieldWrapper
+                    label={t("auth.patentNum")}
+                    icon={<FileText size={18} />}
+                    required
+                  >
+                    <input
+                      type="text"
+                      placeholder="P-1234567-X"
+                      value={registerData.patentNumber}
+                      onChange={(e) =>
+                        handleRegisterChange("patentNumber", e.target.value)
+                      }
+                      className="w-full outline-none bg-transparent rtl:text-right"
+                      required
+                    />
+                  </FieldWrapper>
+
+                  <FieldWrapper
+                    label={t("auth.nationalId")}
+                    icon={<BadgeCheck size={18} />}
+                    required
+                  >
+                    <input
+                      type="text"
+                      placeholder="01234567"
+                      value={registerData.nationalIdNumber}
+                      onChange={(e) =>
+                        handleRegisterChange(
+                          "nationalIdNumber",
+                          e.target.value
+                        )
+                      }
+                      className="w-full outline-none bg-transparent rtl:text-right"
+                      required
+                    />
+                  </FieldWrapper>
+
+                  <FieldWrapper
+                    label={t("auth.docs.identity")}
+                    icon={<Upload size={18} />}
+                    required
+                  >
+                    <div className="flex items-center gap-3">
+                       <input
+                        type="file"
+                        onChange={(e) => handleAgencyDocumentChange("identityDocument", e.target.files[0])}
+                        className="hidden"
+                        id="identity"
+                      />
+                      <label htmlFor="identity" className="cursor-pointer text-xs font-bold text-indigo-600 hover:underline">
+                        {agencyDocuments.identityDocument ? agencyDocuments.identityDocument.name : t("auth.docs.uploadBtn")}
+                      </label>
+                    </div>
+                  </FieldWrapper>
+
+                  <FieldWrapper
+                    label={t("auth.docs.patent")}
+                    icon={<Upload size={18} />}
+                    required
+                  >
+                    <div className="flex items-center gap-3">
+                       <input
+                        type="file"
+                        onChange={(e) => handleAgencyDocumentChange("patentDocument", e.target.files[0])}
+                        className="hidden"
+                        id="patent"
+                      />
+                      <label htmlFor="patent" className="cursor-pointer text-xs font-bold text-indigo-600 hover:underline">
+                        {agencyDocuments.patentDocument ? agencyDocuments.patentDocument.name : t("auth.docs.uploadBtn")}
+                      </label>
+                    </div>
+                  </FieldWrapper>
+
+                  <FieldWrapper
+                    label={t("auth.docs.commReg")}
+                    icon={<Upload size={18} />}
+                    required
+                  >
+                    <div className="flex items-center gap-3">
+                       <input
+                        type="file"
+                        onChange={(e) => handleAgencyDocumentChange("commercialRegistrationDocument", e.target.files[0])}
+                        className="hidden"
+                        id="commReg"
+                      />
+                      <label htmlFor="commReg" className="cursor-pointer text-xs font-bold text-indigo-600 hover:underline">
+                        {agencyDocuments.commercialRegistrationDocument ? agencyDocuments.commercialRegistrationDocument.name : t("auth.docs.uploadBtn")}
+                      </label>
+                    </div>
+                  </FieldWrapper>
+
+                  <FieldWrapper
+                    label={t("auth.docs.agencyLicense")}
+                    icon={<Upload size={18} />}
+                    required
+                  >
+                    <div className="flex items-center gap-3">
+                       <input
+                        type="file"
+                        onChange={(e) => handleAgencyDocumentChange("agencyLicenseDocument", e.target.files[0])}
+                        className="hidden"
+                        id="license"
+                      />
+                      <label htmlFor="license" className="cursor-pointer text-xs font-bold text-indigo-600 hover:underline">
+                        {agencyDocuments.agencyLicenseDocument ? agencyDocuments.agencyLicenseDocument.name : t("auth.docs.uploadBtn")}
+                      </label>
+                    </div>
+                  </FieldWrapper>
+
+                  <FieldWrapper
+                    label={t("auth.docs.addressProof")}
+                    icon={<Upload size={18} />}
+                    required
+                  >
+                    <div className="flex items-center gap-3">
+                       <input
+                        type="file"
+                        onChange={(e) => handleAgencyDocumentChange("proofOfAddressDocument", e.target.files[0])}
+                        className="hidden"
+                        id="addressProof"
+                      />
+                      <label htmlFor="addressProof" className="cursor-pointer text-xs font-bold text-indigo-600 hover:underline">
+                        {agencyDocuments.proofOfAddressDocument ? agencyDocuments.proofOfAddressDocument.name : t("auth.docs.uploadBtn")}
+                      </label>
+                    </div>
+                  </FieldWrapper>
+
+                  <FieldWrapper
+                    label={t("auth.passwordLabel")}
+                    icon={<Lock size={18} />}
+                    required
+                  >
+                    <input
+                      type="password"
+                      placeholder="••••••••"
+                      value={registerData.password}
+                      onChange={(e) =>
+                        handleRegisterChange("password", e.target.value)
+                      }
+                      className="w-full outline-none bg-transparent rtl:text-right"
+                      required
+                    />
+                  </FieldWrapper>
+                </>
+              )}
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-indigo-500 to-fuchsia-500 py-3.5 text-sm font-bold text-white shadow-lg shadow-fuchsia-500/30 transition hover:scale-[1.02] hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-fuchsia-500/20 disabled:opacity-70"
+              >
+                {loading ? (
+                  <div className="h-5 w-5 animate-spin rounded-full border-2 border-white/30 border-t-white"></div>
+                ) : (
+                  <>
+                    {t("auth.submitRegistration")} <ArrowRight size={18} className="rtl:rotate-180" />
+                  </>
+                )}
+              </button>
+
+              <div className="mt-8 text-center text-sm font-medium">
+                <span className="text-slate-500">{t("auth.alreadyHaveAccount")} </span>
+                <button
+                  type="button"
+                  onClick={() => { setMode("login"); setMessage(""); }}
+                  className="text-indigo-600 hover:text-indigo-700 focus:underline focus:outline-none"
+                >
+                   {t("auth.signInLink")}
+                </button>
+              </div>
+            </form>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+                      accept=".pdf,image/*"
+                      onChange={(e) =>
+                        handleAgencyDocumentChange(
+                          "identityDocument",
+                          e.target.files?.[0]
+                        )
+                      }
+                      className="w-full text-xs"
+                      required
+                    />
+                  </FieldWrapper>
+
+                  <FieldWrapper
+                    label={t("auth.docs.patent")}
+                    icon={<Upload size={18} />}
+                    required
+                  >
+                    <input
+                      type="file"
+                      accept=".pdf,image/*"
+                      onChange={(e) =>
+                        handleAgencyDocumentChange(
+                          "patentDocument",
+                          e.target.files?.[0]
+                        )
+                      }
+                      className="w-full text-xs"
+                      required
+                    />
+                  </FieldWrapper>
+
+                  <FieldWrapper
+                    label={t("auth.docs.commReg")}
+                    icon={<Upload size={18} />}
+                    required
+                  >
+                    <input
+                      type="file"
+                      accept=".pdf,image/*"
+                      onChange={(e) =>
+                        handleAgencyDocumentChange(
+                          "commercialRegistrationDocument",
+                          e.target.files?.[0]
+                        )
+                      }
+                      className="w-full text-xs"
+                      required
+                    />
+                  </FieldWrapper>
+
+                  <FieldWrapper
+                    label={t("auth.docs.agencyLicense")}
+                    icon={<Upload size={18} />}
+                    required
+                  >
+                    <input
+                      type="file"
+                      accept=".pdf,image/*"
+                      onChange={(e) =>
+                        handleAgencyDocumentChange(
+                          "agencyLicenseDocument",
+                          e.target.files?.[0]
+                        )
+                      }
+                      className="w-full text-xs"
+                      required
+                    />
+                  </FieldWrapper>
+
+                  <FieldWrapper
+                    label={t("auth.docs.proofAddress")}
+                    icon={<Upload size={18} />}
+                    required
+                  >
+                    <input
+                      type="file"
+                      accept=".pdf,image/*"
+                      onChange={(e) =>
+                        handleAgencyDocumentChange(
+                          "proofOfAddressDocument",
+                          e.target.files?.[0]
+                        )
+                      }
+                      className="w-full text-xs"
                       required
                     />
                   </FieldWrapper>
@@ -512,292 +1038,55 @@ export default function AuthPage() {
                   </FieldWrapper>
 
                   <FieldWrapper
-                    label="Confirm Password"
+                    label={t("auth.confirmPassword")}
                     icon={<BadgeCheck size={18} />}
                     required
                   >
                     <input
                       type="password"
-                      placeholder="Confirm your password"
+                      placeholder="••••••••"
                       value={registerData.confirmPassword}
                       onChange={(e) =>
                         handleRegisterChange("confirmPassword", e.target.value)
                       }
-                      className="w-full outline-none"
+                      className="w-full outline-none bg-transparent"
                       required
                     />
                   </FieldWrapper>
                 </>
               )}
 
-              {registerData.role === "Promoter (Promoteur individuel)" && (
-                <>
-                  <FieldWrapper
-                    label="Full Name"
-                    icon={<User size={18} />}
-                    required
-                  >
-                    <input
-                      type="text"
-                      placeholder="Enter your full name"
-                      value={registerData.fullName}
-                      onChange={(e) =>
-                        handleRegisterChange("fullName", e.target.value)
-                      }
-                      className="w-full outline-none"
-                      required
-                    />
-                  </FieldWrapper>
+              <button
+                type="submit"
+                disabled={loading}
+                className="flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-indigo-500 to-fuchsia-500 py-3.5 text-sm font-bold text-white shadow-lg shadow-fuchsia-500/30 transition hover:scale-[1.02] hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-fuchsia-500/20 disabled:opacity-70"
+              >
+                {loading ? (
+                  <div className="h-5 w-5 animate-spin rounded-full border-2 border-white/30 border-t-white"></div>
+                ) : (
+                  <>
+                    {t("auth.submitRegistration")} <ArrowRight size={18} />
+                  </>
+                )}
+              </button>
 
-                  <FieldWrapper
-                    label="Company Name"
-                    icon={<Building2 size={18} />}
-                    required
-                  >
-                    <input
-                      type="text"
-                      placeholder="Enter company name"
-                      value={registerData.companyName}
-                      onChange={(e) =>
-                        handleRegisterChange("companyName", e.target.value)
-                      }
-                      className="w-full outline-none"
-                      required
-                    />
-                  </FieldWrapper>
-
-                  <FieldWrapper
-                    label="Email Address"
-                    icon={<Mail size={18} />}
-                    required
-                  >
-                    <input
-                      type="email"
-                      placeholder="Enter your email"
-                      value={registerData.email}
-                      onChange={(e) =>
-                        handleRegisterChange("email", e.target.value)
-                      }
-                      className="w-full outline-none"
-                      required
-                    />
-                  </FieldWrapper>
-
-                  <FieldWrapper
-                    label="Phone Number"
-                    icon={<Phone size={18} />}
-                    required
-                  >
-                    <input
-                      type="tel"
-                      placeholder="Enter phone number"
-                      value={registerData.phone}
-                      onChange={(e) =>
-                        handleRegisterChange("phone", e.target.value)
-                      }
-                      className="w-full outline-none"
-                      required
-                    />
-                  </FieldWrapper>
-
-                  <FieldWrapper
-                    label="Password"
-                    icon={<Lock size={18} />}
-                    required
-                  >
-                    <input
-                      type="password"
-                      placeholder="Create a password"
-                      value={registerData.password}
-                      onChange={(e) =>
-                        handleRegisterChange("password", e.target.value)
-                      }
-                      className="w-full outline-none"
-                      required
-                    />
-                  </FieldWrapper>
-
-                  <FieldWrapper
-                    label="Confirm Password"
-                    icon={<BadgeCheck size={18} />}
-                    required
-                  >
-                    <input
-                      type="password"
-                      placeholder="Confirm your password"
-                      value={registerData.confirmPassword}
-                      onChange={(e) =>
-                        handleRegisterChange("confirmPassword", e.target.value)
-                      }
-                      className="w-full outline-none"
-                      required
-                    />
-                  </FieldWrapper>
-                </>
-              )}
-
-              {registerData.role === "Real Estate Agency (Agence)" && (
-                <>
-                  <FieldWrapper
-                    label="Agency Name"
-                    icon={<Building2 size={18} />}
-                    required
-                  >
-                    <input
-                      type="text"
-                      placeholder="Enter agency name"
-                      value={registerData.agencyName}
-                      onChange={(e) =>
-                        handleRegisterChange("agencyName", e.target.value)
-                      }
-                      className="w-full outline-none"
-                      required
-                    />
-                  </FieldWrapper>
-
-                  <FieldWrapper
-                    label="Manager Full Name"
-                    icon={<User size={18} />}
-                    required
-                  >
-                    <input
-                      type="text"
-                      placeholder="Enter manager full name"
-                      value={registerData.managerName}
-                      onChange={(e) =>
-                        handleRegisterChange("managerName", e.target.value)
-                      }
-                      className="w-full outline-none"
-                      required
-                    />
-                  </FieldWrapper>
-
-                  <FieldWrapper
-                    label="Email Address"
-                    icon={<Mail size={18} />}
-                    required
-                  >
-                    <input
-                      type="email"
-                      placeholder="Enter agency email"
-                      value={registerData.email}
-                      onChange={(e) =>
-                        handleRegisterChange("email", e.target.value)
-                      }
-                      className="w-full outline-none"
-                      required
-                    />
-                  </FieldWrapper>
-
-                  <FieldWrapper
-                    label="Phone Number"
-                    icon={<Phone size={18} />}
-                    required
-                  >
-                    <input
-                      type="tel"
-                      placeholder="Enter phone number"
-                      value={registerData.phone}
-                      onChange={(e) =>
-                        handleRegisterChange("phone", e.target.value)
-                      }
-                      className="w-full outline-none"
-                      required
-                    />
-                  </FieldWrapper>
-
-                  <FieldWrapper
-                    label="Address"
-                    icon={<MapPin size={18} />}
-                    required
-                  >
-                    <input
-                      type="text"
-                      placeholder="Enter agency address"
-                      value={registerData.address}
-                      onChange={(e) =>
-                        handleRegisterChange("address", e.target.value)
-                      }
-                      className="w-full outline-none"
-                      required
-                    />
-                  </FieldWrapper>
-
-                  <FieldWrapper
-                    label="Commercial Registration Number"
-                    icon={<FileText size={18} />}
-                    required
-                  >
-                    <input
-                      type="text"
-                      placeholder="Enter commercial registration number"
-                      value={registerData.commercialRegistrationNumber}
-                      onChange={(e) =>
-                        handleRegisterChange(
-                          "commercialRegistrationNumber",
-                          e.target.value
-                        )
-                      }
-                      className="w-full outline-none"
-                      required
-                    />
-                  </FieldWrapper>
-
-                  <FieldWrapper
-                    label="Patent Number"
-                    icon={<FileText size={18} />}
-                    required
-                  >
-                    <input
-                      type="text"
-                      placeholder="Enter patent number"
-                      value={registerData.patentNumber}
-                      onChange={(e) =>
-                        handleRegisterChange("patentNumber", e.target.value)
-                      }
-                      className="w-full outline-none"
-                      required
-                    />
-                  </FieldWrapper>
-
-                  <FieldWrapper
-                    label="National ID Number"
-                    icon={<BadgeCheck size={18} />}
-                    required
-                  >
-                    <input
-                      type="text"
-                      placeholder="Enter national ID number"
-                      value={registerData.nationalIdNumber}
-                      onChange={(e) =>
-                        handleRegisterChange(
-                          "nationalIdNumber",
-                          e.target.value
-                        )
-                      }
-                      className="w-full outline-none"
-                      required
-                    />
-                  </FieldWrapper>
-
-                  <FieldWrapper
-                    label="Identity Document"
-                    icon={<Upload size={18} />}
-                    required
-                  >
-                    <input
-                      type="file"
-                      accept=".pdf,image/*"
-                      onChange={(e) =>
-                        handleAgencyDocumentChange(
-                          "identityDocument",
-                          e.target.files?.[0]
-                        )
-                      }
-                      className="w-full outline-none"
-                      required
-                    />
-                  </FieldWrapper>
+              <div className="mt-8 text-center text-sm font-medium">
+                <span className="text-slate-500">{t("auth.alreadyHaveAccount")} </span>
+                <button
+                  type="button"
+                  onClick={() => { setMode("login"); setMessage(""); }}
+                  className="text-indigo-600 hover:text-indigo-700 focus:underline focus:outline-none"
+                >
+                  {t("auth.signInLink")}
+                </button>
+              </div>
+            </form>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
 
                   <FieldWrapper
                     label="Patent Document"

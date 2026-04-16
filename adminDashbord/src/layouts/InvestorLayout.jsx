@@ -1,5 +1,6 @@
 import { Outlet, Navigate, useLocation } from "react-router-dom";
 import InvestorSidebar from "../components/InvestorSidebar";
+import LanguageSwitcher from "../components/LanguageSwitcher";
 
 export default function InvestorLayout() {
   const location = useLocation();
@@ -19,3 +20,5 @@ export default function InvestorLayout() {
     </div>
   );
 }
+
+

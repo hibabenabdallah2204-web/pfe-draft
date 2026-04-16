@@ -1,4 +1,5 @@
 import { useMemo, useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Activity,
   Search,
@@ -28,8 +29,6 @@ const allowedOwnerRoles = [
   "Real Estate Agent / Agency",
 ];
 
-
-
 function getStatusClasses(status) {
   switch (status) {
     case "Approved":
@@ -43,6 +42,15 @@ function getStatusClasses(status) {
     default:
       return "bg-slate-100 text-slate-500";
   }
+}
+
+function getStatusKey(status) {
+  const s = status?.toUpperCase().replace(" ", "_");
+  if (["APPROVED", "PUBLISHED", "FUNDING_OPEN"].includes(s)) return s;
+  if (["SUBMITTED", "KYC_PENDING", "UNDER_REVIEW"].includes(s)) return s;
+  if (s === "PENDING" || s === "REJECTED") return s;
+  if (s === "NOT_SUBMITTED") return s;
+  return "DRAFT";
 }
 
 function getOwnerRoleIcon(role) {
@@ -60,42 +68,42 @@ function isDeletable(status) {
   return status !== "Approved";
 }
 
-function validateAsset(asset) {
+function validateAsset(asset, t) {
   const errors = [];
 
   if (!asset.id || asset.id.trim() === "") {
-    errors.push("Asset ID is required.");
+    errors.push(t("monitoring.errors.idReq"));
   }
 
   if (!asset.title || asset.title.trim().length < 3) {
-    errors.push("Asset title must contain at least 3 characters.");
+    errors.push(t("monitoring.errors.titleMin"));
   }
 
   if (!asset.location || asset.location.trim().length < 2) {
-    errors.push("Asset location is required.");
+    errors.push(t("monitoring.errors.locationReq"));
   }
 
   if (!asset.assetType || !allowedAssetTypes.includes(asset.assetType)) {
-    errors.push("Asset type is invalid.");
+    errors.push(t("monitoring.errors.typeInvalid"));
   }
 
   if (!asset.status || !allowedStatuses.includes(asset.status)) {
-    errors.push("Asset status is invalid.");
+    errors.push(t("monitoring.errors.statusInvalid"));
   }
 
   if (!asset.createdAt || asset.createdAt.trim() === "") {
-    errors.push("Created At is required.");
+    errors.push(t("monitoring.errors.dateReq"));
   }
 
   if (
     !asset.submittedByRole ||
     !allowedOwnerRoles.includes(asset.submittedByRole)
   ) {
-    errors.push("Submitted By Role is invalid.");
+    errors.push(t("monitoring.errors.roleInvalid"));
   }
 
   if (!asset.ownerName || asset.ownerName.trim().length < 2) {
-    errors.push("Owner name is required.");
+    errors.push(t("monitoring.errors.ownerReq"));
   }
 
   return {
@@ -105,6 +113,7 @@ function validateAsset(asset) {
 }
 
 function InfoBox({ label, value }) {
+  const { t } = useTranslation();
   const isEmpty = !value && value !== 0;
 
   return (
@@ -112,34 +121,36 @@ function InfoBox({ label, value }) {
       className={`rounded-2xl border p-4 ${isEmpty ? "border-red-200 bg-red-50" : "border-slate-200 bg-slate-50"
         }`}
     >
-      <p className="text-sm font-semibold text-slate-500">{label}</p>
+      <p className="text-sm font-semibold text-slate-500 rtl:text-right">{label}</p>
       <p
         className={`mt-2 text-[15px] font-medium ${isEmpty ? "text-red-600" : "text-slate-900"
-          }`}
+          } rtl:text-right`}
       >
-        {isEmpty ? "Missing value" : value}
+        {isEmpty ? t("common.missingValue") : value}
       </p>
     </div>
   );
 }
 
 function AssetPlatformCard({ asset, onDelete }) {
-  const validation = validateAsset(asset);
+  const { t } = useTranslation();
+  const validation = validateAsset(asset, t);
   const deletable = isDeletable(asset.status);
+  const statusKey = getStatusKey(asset.status);
 
   return (
     <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div>
           <div className="flex flex-wrap items-center gap-3">
-            <h2 className="text-2xl font-bold text-slate-900">{asset.title}</h2>
+            <h2 className="text-2xl font-bold text-slate-900 rtl:text-right">{asset.title}</h2>
 
             <span
               className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${getStatusClasses(
                 asset.status
               )}`}
             >
-              {asset.status}
+              {t(`common.states.${statusKey}`)}
             </span>
 
             <span className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">
@@ -150,36 +161,36 @@ function AssetPlatformCard({ asset, onDelete }) {
             {validation.isValid ? (
               <span className="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-600">
                 <CheckCircle2 size={14} />
-                Valid
+                {t("common.valid")}
               </span>
             ) : (
               <span className="inline-flex items-center gap-2 rounded-full bg-red-50 px-3 py-1 text-xs font-semibold text-red-600">
                 <AlertTriangle size={14} />
-                Invalid
+                {t("common.incomplete")}
               </span>
             )}
 
             {deletable ? (
               <span className="inline-flex items-center gap-2 rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-600">
                 <Trash2 size={14} />
-                Deletable
+                {t("monitoring.actions.deletable")}
               </span>
             ) : (
               <span className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">
                 <ShieldCheck size={14} />
-                Protected
+                {t("monitoring.actions.protected")}
               </span>
             )}
           </div>
 
-          <p className="mt-2 text-sm text-slate-500">
-            Monitor listing visibility, moderation status, ownership source, and platform compliance.
+          <p className="mt-2 text-sm text-slate-500 rtl:text-right">
+            {t("monitoring.sub")}
           </p>
         </div>
 
-        <div className="flex flex-wrap gap-3">
+        <div className="flex flex-wrap gap-3 rtl:flex-row-reverse">
           <button className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:border-indigo-300 hover:text-indigo-600">
-            View Details
+            {t("monitoring.actions.viewDetails")}
           </button>
 
           <button
@@ -190,35 +201,35 @@ function AssetPlatformCard({ asset, onDelete }) {
               : "cursor-not-allowed bg-slate-300"
               }`}
           >
-            Delete Listing
+            {t("monitoring.actions.deleteListing")}
           </button>
         </div>
       </div>
 
       <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <InfoBox label="Asset ID" value={asset.id} />
-        <InfoBox label="Location" value={asset.location} />
-        <InfoBox label="Asset Type" value={asset.assetType} />
-        <InfoBox label="Created At" value={asset.createdAt} />
-        <InfoBox label="Views" value={asset.views} />
-        <InfoBox label="Reports" value={asset.reports} />
-        <InfoBox label="Owner Name" value={asset.ownerName} />
-        <InfoBox label="Submitted By" value={asset.submittedByRole} />
-        <InfoBox label="Current Status" value={asset.status} />
+        <InfoBox label={t("monitoring.labels.assetId")} value={asset.id} />
+        <InfoBox label={t("monitoring.labels.location")} value={asset.location} />
+        <InfoBox label={t("monitoring.labels.assetType")} value={asset.assetType} />
+        <InfoBox label={t("monitoring.labels.createdAt")} value={asset.createdAt} />
+        <InfoBox label={t("monitoring.labels.views")} value={asset.views} />
+        <InfoBox label={t("monitoring.labels.reports")} value={asset.reports} />
+        <InfoBox label={t("monitoring.labels.ownerName")} value={asset.ownerName} />
+        <InfoBox label={t("monitoring.labels.submittedBy")} value={asset.submittedByRole} />
+        <InfoBox label={t("monitoring.labels.status")} value={t(`common.states.${statusKey}`)} />
         <InfoBox
-          label="Admin Rule"
-          value={deletable ? "Can be deleted by admin" : "Deletion not allowed"}
+          label={t("monitoring.labels.adminRule")}
+          value={deletable ? t("monitoring.rules.canDelete") : t("monitoring.rules.noDelete")}
         />
       </div>
 
       {!validation.isValid && (
         <div className="mt-6 rounded-2xl border border-red-200 bg-red-50 p-4">
-          <h3 className="flex items-center gap-2 text-sm font-bold text-red-700">
+          <h3 className="flex items-center gap-2 text-sm font-bold text-red-700 rtl:flex-row-reverse">
             <AlertTriangle size={16} />
-            Validation Errors
+            {t("validation.errorHeader")}
           </h3>
 
-          <ul className="mt-3 space-y-2 text-sm text-red-600">
+          <ul className="mt-3 space-y-2 text-sm text-red-600 rtl:text-right">
             {validation.errors.map((error, index) => (
               <li key={index}>• {error}</li>
             ))}
@@ -230,6 +241,7 @@ function AssetPlatformCard({ asset, onDelete }) {
 }
 
 export default function PlatformMonitoring() {
+  const { t } = useTranslation();
   const [assets, setAssets] = useState([]);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
@@ -297,16 +309,16 @@ export default function PlatformMonitoring() {
   return (
     <div>
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-        <div>
+        <div className="rtl:text-right">
           <h1 className="text-4xl font-bold text-slate-900">
-            Platform Monitoring Dashboard
+            {t("monitoring.title")}
           </h1>
           <p className="mt-3 text-[16px] text-slate-500">
-            Monitor all property listings on the platform and remove any non-approved submission when necessary.
+            {t("monitoring.sub")}
           </p>
         </div>
 
-        <div className="flex w-full flex-col gap-3 lg:w-auto lg:flex-row">
+        <div className="flex w-full flex-col gap-3 lg:w-auto lg:flex-row rtl:flex-row-reverse">
           <div className="relative w-full lg:w-80">
             <Search
               className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
@@ -314,7 +326,7 @@ export default function PlatformMonitoring() {
             />
             <input
               type="text"
-              placeholder="Search listing..."
+              placeholder={t("monitoring.search")}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="h-12 w-full rounded-2xl border border-slate-200 bg-white pl-11 pr-4 text-sm text-slate-700 outline-none focus:border-indigo-400"
@@ -326,11 +338,11 @@ export default function PlatformMonitoring() {
             onChange={(e) => setStatusFilter(e.target.value)}
             className="h-12 rounded-2xl border border-slate-200 bg-white px-4 text-sm text-slate-700 outline-none focus:border-indigo-400"
           >
-            <option value="All">All Statuses</option>
-            <option value="Not Submitted">Not Submitted</option>
-            <option value="Pending">Pending</option>
-            <option value="Approved">Approved</option>
-            <option value="Rejected">Rejected</option>
+            <option value="All">{t("monitoring.allStats")}</option>
+            <option value="Not Submitted">{t("common.states.NOT_SUBMITTED")}</option>
+            <option value="Pending">{t("common.states.PENDING")}</option>
+            <option value="Approved">{t("common.states.APPROVED")}</option>
+            <option value="Rejected">{t("common.states.REJECTED")}</option>
           </select>
         </div>
       </div>
@@ -338,8 +350,8 @@ export default function PlatformMonitoring() {
       <div className="mt-8 grid grid-cols-1 gap-5 md:grid-cols-5">
         <div className="rounded-3xl bg-white p-6 shadow-sm">
           <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-slate-500">Total Listings</p>
+            <div className="rtl:text-right">
+              <p className="text-sm text-slate-500">{t("monitoring.statsTotal")}</p>
               <p className="mt-3 text-3xl font-bold text-slate-900">{totalAssets}</p>
             </div>
             <div className="rounded-2xl bg-gradient-to-br from-indigo-500 to-fuchsia-500 p-3 text-white">
@@ -348,91 +360,91 @@ export default function PlatformMonitoring() {
           </div>
         </div>
 
-        <div className="rounded-3xl bg-white p-6 shadow-sm">
-          <p className="text-sm text-slate-500">Approved Listings</p>
+        <div className="rounded-3xl bg-white p-6 shadow-sm rtl:text-right">
+          <p className="text-sm text-slate-500">{t("monitoring.statsApproved")}</p>
           <p className="mt-3 text-3xl font-bold text-emerald-600">{approvedAssets}</p>
         </div>
 
-        <div className="rounded-3xl bg-white p-6 shadow-sm">
-          <p className="text-sm text-slate-500">Non-Approved Listings</p>
+        <div className="rounded-3xl bg-white p-6 shadow-sm rtl:text-right">
+          <p className="text-sm text-slate-500">{t("monitoring.statsNonApproved")}</p>
           <p className="mt-3 text-3xl font-bold text-amber-600">{nonApprovedAssets}</p>
         </div>
 
-        <div className="rounded-3xl bg-white p-6 shadow-sm">
-          <p className="text-sm text-slate-500">Deletable Listings</p>
+        <div className="rounded-3xl bg-white p-6 shadow-sm rtl:text-right">
+          <p className="text-sm text-slate-500">{t("monitoring.statsDeletable")}</p>
           <p className="mt-3 text-3xl font-bold text-indigo-600">{deletableAssets}</p>
         </div>
 
-        <div className="rounded-3xl bg-white p-6 shadow-sm">
-          <p className="text-sm text-slate-500">Reported Listings</p>
+        <div className="rounded-3xl bg-white p-6 shadow-sm rtl:text-right">
+          <p className="text-sm text-slate-500">{t("monitoring.statsReported")}</p>
           <p className="mt-3 text-3xl font-bold text-red-600">{reportedAssets}</p>
         </div>
       </div>
 
       <div className="mt-8 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 rtl:flex-row-reverse">
           <div className="rounded-2xl bg-slate-100 p-3 text-slate-600">
             <MonitorSmartphone size={22} />
           </div>
-          <div>
-            <h2 className="text-xl font-bold text-slate-900">Admin Monitoring Rules</h2>
+          <div className="rtl:text-right">
+            <h2 className="text-xl font-bold text-slate-900">{t("monitoring.rulesTitle")}</h2>
             <p className="mt-1 text-sm text-slate-500">
-              The administrator monitors all platform listings and can remove only non-approved submissions.
+              {t("monitoring.rulesSub")}
             </p>
           </div>
         </div>
 
         <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-3">
-          <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-5">
-            <h3 className="text-sm font-bold text-emerald-700">Protected Listings</h3>
+          <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-5 rtl:text-right">
+            <h3 className="text-sm font-bold text-emerald-700">{t("monitoring.protectedTitle")}</h3>
             <p className="mt-2 text-sm text-emerald-600">
-              Approved listings remain visible on the platform and cannot be deleted by this action.
+              {t("monitoring.protectedDesc")}
             </p>
           </div>
 
-          <div className="rounded-2xl border border-amber-200 bg-amber-50 p-5">
-            <h3 className="text-sm font-bold text-amber-700">Listings Requiring Review</h3>
+          <div className="rounded-2xl border border-amber-200 bg-amber-50 p-5 rtl:text-right">
+            <h3 className="text-sm font-bold text-amber-700">{t("monitoring.reviewReqTitle")}</h3>
             <p className="mt-2 text-sm text-amber-600">
-              Pending and Not Submitted listings should be reviewed quickly to maintain platform quality.
+              {t("monitoring.reviewReqDesc")}
             </p>
           </div>
 
-          <div className="rounded-2xl border border-red-200 bg-red-50 p-5">
-            <h3 className="text-sm font-bold text-red-700">Listings Eligible For Deletion</h3>
+          <div className="rounded-2xl border border-red-200 bg-red-50 p-5 rtl:text-right">
+            <h3 className="text-sm font-bold text-red-700">{t("monitoring.deletableTitle")}</h3>
             <p className="mt-2 text-sm text-red-600">
-              Rejected, Pending, and Not Submitted listings may be deleted by the administrator.
+              {t("monitoring.deletableDesc")}
             </p>
           </div>
         </div>
 
         <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-3">
-          <div className="rounded-2xl bg-slate-50 p-5">
-            <div className="flex items-center gap-2 text-slate-700">
+          <div className="rounded-2xl bg-slate-50 p-5 rtl:text-right">
+            <div className="flex items-center gap-2 text-slate-700 rtl:flex-row-reverse">
               <Eye size={18} />
-              <h3 className="text-sm font-bold">Visibility Tracking</h3>
+              <h3 className="text-sm font-bold">{t("monitoring.visibilityTitle")}</h3>
             </div>
             <p className="mt-2 text-sm text-slate-500">
-              Track listing views to identify popular or inactive assets.
+              {t("monitoring.visibilityDesc")}
             </p>
           </div>
 
-          <div className="rounded-2xl bg-slate-50 p-5">
-            <div className="flex items-center gap-2 text-slate-700">
+          <div className="rounded-2xl bg-slate-50 p-5 rtl:text-right">
+            <div className="flex items-center gap-2 text-slate-700 rtl:flex-row-reverse">
               <AlertTriangle size={18} />
-              <h3 className="text-sm font-bold">Reports Monitoring</h3>
+              <h3 className="text-sm font-bold">{t("monitoring.reportsTitle")}</h3>
             </div>
             <p className="mt-2 text-sm text-slate-500">
-              Highlight listings that received warnings or user reports.
+              {t("monitoring.reportsDesc")}
             </p>
           </div>
 
-          <div className="rounded-2xl bg-slate-50 p-5">
-            <div className="flex items-center gap-2 text-slate-700">
+          <div className="rounded-2xl bg-slate-50 p-5 rtl:text-right">
+            <div className="flex items-center gap-2 text-slate-700 rtl:flex-row-reverse">
               <BarChart3 size={18} />
-              <h3 className="text-sm font-bold">Moderation Metrics</h3>
+              <h3 className="text-sm font-bold">{t("monitoring.metricsTitle")}</h3>
             </div>
             <p className="mt-2 text-sm text-slate-500">
-              Follow moderation trends and approval workload across the platform.
+              {t("monitoring.metricsDesc")}
             </p>
           </div>
         </div>
@@ -440,8 +452,8 @@ export default function PlatformMonitoring() {
 
       <div className="mt-8 space-y-6">
         {isLoading ? (
-          <div className="rounded-3xl bg-white p-8 text-center shadow-sm">
-            <p className="text-slate-500">Loading listings...</p>
+          <div className="rounded-3xl bg-white p-8 text-center shadow-sm text-slate-500">
+             {t("monitoring.status.loading")}
           </div>
         ) : filteredAssets.length > 0 ? (
           filteredAssets.map((asset) => (
@@ -454,7 +466,7 @@ export default function PlatformMonitoring() {
         ) : (
           <div className="rounded-3xl bg-white p-8 text-center shadow-sm">
             <FolderSearch className="mx-auto text-slate-400" size={28} />
-            <p className="mt-3 text-slate-500">No listings found.</p>
+            <p className="mt-3 text-slate-500">{t("monitoring.status.noAssets")}</p>
           </div>
         )}
       </div>

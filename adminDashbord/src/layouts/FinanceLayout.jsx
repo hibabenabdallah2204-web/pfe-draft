@@ -1,5 +1,6 @@
 import { Outlet, Navigate, useLocation } from "react-router-dom";
 import FinanceSidebar from "../components/FinanceSidebar";
+import LanguageSwitcher from "../components/LanguageSwitcher";
 
 export default function FinanceLayout() {
   const location = useLocation();
@@ -19,3 +20,5 @@ export default function FinanceLayout() {
     </div>
   );
 }
+
+

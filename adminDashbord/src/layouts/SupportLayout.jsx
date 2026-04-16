@@ -1,5 +1,6 @@
 import { Outlet, Navigate, useLocation } from "react-router-dom";
 import SupportSidebar from "../components/SupportSidebar";
+import LanguageSwitcher from "../components/LanguageSwitcher";
 
 export default function SupportLayout() {
   const location = useLocation();
@@ -19,3 +20,5 @@ export default function SupportLayout() {
     </div>
   );
 }
+
+

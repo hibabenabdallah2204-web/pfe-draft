@@ -1,36 +1,39 @@
 import { useState } from "react";
-import {
-  MapPin,
-  Building2,
-  HardHat,
-  BadgeDollarSign,
-  UploadCloud,
-  CheckCircle2,
-  ArrowRight
+import { useTranslation } from "react-i18next";
+import { 
+  Building2, 
+  MapPin, 
+  Target, 
+  FileText, 
+  Camera, 
+  ArrowLeft,
+  Loader2,
+  CheckCircle2
 } from "lucide-react";
 import API from "../../api/axios";
 
 export default function SubmitProject() {
+  const { t } = useTranslation();
+  const [loading, setLoading] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  
   const [formData, setFormData] = useState({
     title: "",
     description: "",
     location: "",
-    propertyType: "Residential",
+    propertyType: "House",
     constructionStage: "Pre-construction",
     globalBudget: "",
     targetAmount: "",
   });
 
   const [files, setFiles] = useState({
-    architecturalPlans: null,
-    administrativeAuth: null,
+    archPlans: null,
+    adminAuth: null,
     photos: null,
   });
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [success, setSuccess] = useState(false);
-
-  const handleInputChange = (e) => {
+  const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
@@ -40,28 +43,17 @@ export default function SubmitProject() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsSubmitting(true);
+    setLoading(true);
+    
     try {
-      // In a real app we'd use FormData since we're uploading files
       const data = new FormData();
-      Object.keys(formData).forEach((key) => data.append(key, formData[key]));
-      Object.keys(files).forEach((key) => {
+      Object.keys(formData).forEach(key => data.append(key, formData[key]));
+      Object.keys(files).forEach(key => {
         if (files[key]) data.append(key, files[key]);
       });
 
-      await API.post("/projects/deposit", data);
-      
-      setSuccess(true);
-      setFormData({
-        title: "",
-        description: "",
-        location: "",
-        propertyType: "Residential",
-        constructionStage: "Pre-construction",
-        globalBudget: "",
-        targetAmount: "",
-      });
-      setTimeout(() => setSuccess(false), 5000);
+      await API.post("/promoter/submit-project", data);
+      setSubmitted(true);
     } catch (error) {
       console.error("Error submitting project", error);
     } finally {
@@ -69,15 +61,27 @@ export default function SubmitProject() {
     }
   };
 
-  const propertyTypes = ["House (Maison)", "Building (Immeuble)", "Agricultural Land (Terrain agricole)", "Bare Land (Terrain nu)"];
-  const stages = ["Pre-construction", "Foundation laying", "Structural frame", "Finishing", "Ready to move"];
+  const propertyTypes = [
+    t("promoter.submit.propHouse"), 
+    t("promoter.submit.propBuilding"), 
+    t("promoter.submit.propAgri"), 
+    t("promoter.submit.propBare")
+  ];
+  
+  const stages = [
+    t("promoter.submit.stagePre"), 
+    t("promoter.submit.stageFound"), 
+    t("promoter.submit.stageFrame"), 
+    t("promoter.submit.stageFinish"), 
+    t("promoter.submit.stageReady")
+  ];
 
   return (
     <div className="mx-auto max-w-4xl">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-slate-900">Submit New Project</h1>
+        <h1 className="text-3xl font-bold text-slate-900">{t("promoter.submit.title")}</h1>
         <p className="mt-2 text-slate-500">
-          Provide detailed project information and required documents for administrative validation.
+          {t("promoter.submit.sub")}
         </p>
       </div>
 
@@ -85,8 +89,8 @@ export default function SubmitProject() {
         <div className="mb-8 flex items-center gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 p-5 text-emerald-700">
           <CheckCircle2 size={24} />
           <div>
-            <h3 className="font-bold">Project Submitted Successfully!</h3>
-            <p className="text-sm text-emerald-600">Your project has been sent to the administrator for validation.</p>
+            <h3 className="font-bold">{t("promoter.submit.successTitle")}</h3>
+            <p className="text-sm text-emerald-600">{t("promoter.submit.successSub")}</p>
           </div>
         </div>
       )}
@@ -95,10 +99,10 @@ export default function SubmitProject() {
         
         {/* Basic Info */}
         <div>
-          <h2 className="mb-5 text-lg font-bold text-slate-900 border-b pb-2">1. Project Overview</h2>
+          <h2 className="mb-5 text-lg font-bold text-slate-900 border-b pb-2">{t("promoter.submit.step1")}</h2>
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             <div className="col-span-1 md:col-span-2">
-              <label className="mb-2 block text-sm font-semibold text-slate-700">Project Title</label>
+              <label className="mb-2 block text-sm font-semibold text-slate-700">{t("promoter.submit.projTitle")}</label>
               <input
                 required
                 type="text"
@@ -106,12 +110,12 @@ export default function SubmitProject() {
                 value={formData.title}
                 onChange={handleInputChange}
                 className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-indigo-400 focus:bg-white focus:ring-4 focus:ring-indigo-50"
-                placeholder="E.g., Skyline Business Center"
+                placeholder={t("promoter.submit.projTitlePlaceholder")}
               />
             </div>
             
             <div className="col-span-1 md:col-span-2">
-              <label className="mb-2 block text-sm font-semibold text-slate-700">Detailed Description</label>
+              <label className="mb-2 block text-sm font-semibold text-slate-700">{t("promoter.submit.projDesc")}</label>
               <textarea
                 required
                 name="description"
@@ -119,7 +123,7 @@ export default function SubmitProject() {
                 onChange={handleInputChange}
                 rows={4}
                 className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-indigo-400 focus:bg-white focus:ring-4 focus:ring-indigo-50"
-                placeholder="Describe the opportunity, goals, and architectural vision..."
+                placeholder={t("promoter.submit.projDescPlaceholder")}
               />
             </div>
           </div>
@@ -127,11 +131,11 @@ export default function SubmitProject() {
 
         {/* Location & Type */}
         <div>
-          <h2 className="mb-5 text-lg font-bold text-slate-900 border-b pb-2">2. Characteristics</h2>
+          <h2 className="mb-5 text-lg font-bold text-slate-900 border-b pb-2">{t("promoter.submit.step2")}</h2>
           <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
             <div className="col-span-1 md:col-span-3">
               <label className="mb-2 flex items-center gap-2 text-sm font-semibold text-slate-700">
-                <MapPin size={16}/> Location
+                <MapPin size={16}/> {t("promoter.submit.location")}
               </label>
               <input
                 required
@@ -140,13 +144,13 @@ export default function SubmitProject() {
                 value={formData.location}
                 onChange={handleInputChange}
                 className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-indigo-400 focus:bg-white focus:ring-4 focus:ring-indigo-50"
-                placeholder="City, Region, Address"
+                placeholder={t("promoter.submit.locationPlaceholder")}
               />
             </div>
 
             <div className="col-span-1">
               <label className="mb-2 flex items-center gap-2 text-sm font-semibold text-slate-700">
-                <Building2 size={16}/> Property Type
+                <Building2 size={16}/> {t("promoter.submit.propType")}
               </label>
               <select
                 name="propertyType"
@@ -160,7 +164,7 @@ export default function SubmitProject() {
 
             <div className="col-span-1 md:col-span-2">
               <label className="mb-2 flex items-center gap-2 text-sm font-semibold text-slate-700">
-                <HardHat size={16}/> Construction Stage
+                <HardHat size={16}/> {t("promoter.submit.constStage")}
               </label>
               <select
                 name="constructionStage"
@@ -176,11 +180,11 @@ export default function SubmitProject() {
 
         {/* Financials */}
         <div>
-          <h2 className="mb-5 text-lg font-bold text-slate-900 border-b pb-2">3. Financial Requirements</h2>
+          <h2 className="mb-5 text-lg font-bold text-slate-900 border-b pb-2">{t("promoter.submit.step3")}</h2>
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             <div>
               <label className="mb-2 flex items-center gap-2 text-sm font-semibold text-slate-700">
-                <BadgeDollarSign size={16}/> Global Budget (TND)
+                <BadgeDollarSign size={16}/> {t("promoter.submit.globalBudget")}
               </label>
               <input
                 required
@@ -189,13 +193,13 @@ export default function SubmitProject() {
                 value={formData.globalBudget}
                 onChange={handleInputChange}
                 className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-indigo-400 focus:bg-white focus:ring-4 focus:ring-indigo-50"
-                placeholder="e.g. 1500000"
+                placeholder={t("promoter.submit.budgetPlaceholder")}
               />
             </div>
             
             <div>
               <label className="mb-2 flex items-center gap-2 text-sm font-semibold text-slate-700">
-                <BadgeDollarSign size={16}/> Target Amount to Raise (TND)
+                <BadgeDollarSign size={16}/> {t("promoter.submit.targetAmount")}
               </label>
               <input
                 required
@@ -204,7 +208,7 @@ export default function SubmitProject() {
                 value={formData.targetAmount}
                 onChange={handleInputChange}
                 className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-indigo-400 focus:bg-white focus:ring-4 focus:ring-indigo-50"
-                placeholder="e.g. 500000"
+                placeholder={t("promoter.submit.targetPlaceholder")}
               />
             </div>
           </div>
@@ -212,37 +216,37 @@ export default function SubmitProject() {
 
         {/* Documents */}
         <div>
-          <h2 className="mb-5 text-lg font-bold text-slate-900 border-b pb-2">4. Official Documents</h2>
+          <h2 className="mb-5 text-lg font-bold text-slate-900 border-b pb-2">{t("promoter.submit.step4")}</h2>
           <div className="space-y-4">
             
-            <div className="flex items-center justify-between rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-4">
               <div className="flex items-center gap-3">
                 <div className="rounded-lg bg-indigo-100 p-2 text-indigo-600"><UploadCloud size={20}/></div>
                 <div>
-                  <p className="text-sm font-semibold text-slate-700">Architectural Plans</p>
-                  <p className="text-xs text-slate-500">PDF, JPG or PNG (Max 10MB)</p>
+                  <p className="text-sm font-semibold text-slate-700">{t("promoter.submit.docPlans")}</p>
+                  <p className="text-xs text-slate-500">{t("promoter.submit.docSub")}</p>
                 </div>
               </div>
               <input type="file" name="architecturalPlans" onChange={handleFileChange} required className="text-sm text-slate-500 file:mr-4 file:rounded-xl file:border-0 file:bg-indigo-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-indigo-700 hover:file:bg-indigo-100"/>
             </div>
 
-            <div className="flex items-center justify-between rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-4">
               <div className="flex items-center gap-3">
                 <div className="rounded-lg bg-indigo-100 p-2 text-indigo-600"><UploadCloud size={20}/></div>
                 <div>
-                  <p className="text-sm font-semibold text-slate-700">Administrative Authorizations</p>
-                  <p className="text-xs text-slate-500">Official permits, zoning docs</p>
+                  <p className="text-sm font-semibold text-slate-700">{t("promoter.submit.docAuth")}</p>
+                  <p className="text-xs text-slate-500">{t("promoter.submit.docAuthSub")}</p>
                 </div>
               </div>
               <input type="file" name="administrativeAuth" onChange={handleFileChange} required className="text-sm text-slate-500 file:mr-4 file:rounded-xl file:border-0 file:bg-indigo-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-indigo-700 hover:file:bg-indigo-100"/>
             </div>
 
-            <div className="flex items-center justify-between rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-4">
               <div className="flex items-center gap-3">
                 <div className="rounded-lg bg-indigo-100 p-2 text-indigo-600"><UploadCloud size={20}/></div>
                 <div>
-                  <p className="text-sm font-semibold text-slate-700">Photos & Progress Reports</p>
-                  <p className="text-xs text-slate-500">Images of current site state</p>
+                  <p className="text-sm font-semibold text-slate-700">{t("promoter.submit.docPhotos")}</p>
+                  <p className="text-xs text-slate-500">{t("promoter.submit.docPhotosSub")}</p>
                 </div>
               </div>
               <input type="file" name="photos" onChange={handleFileChange} multiple className="text-sm text-slate-500 file:mr-4 file:rounded-xl file:border-0 file:bg-indigo-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-indigo-700 hover:file:bg-indigo-100"/>
@@ -257,10 +261,11 @@ export default function SubmitProject() {
             disabled={isSubmitting}
             className={`flex items-center gap-2 rounded-2xl bg-gradient-to-r from-indigo-500 to-fuchsia-500 px-8 py-4 font-bold text-white shadow-lg transition hover:shadow-xl ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
           >
-            {isSubmitting ? "Submitting Project..." : "Submit Project"} <ArrowRight size={20} />
+            {isSubmitting ? t("promoter.submit.submittingBtn") : t("promoter.submit.submitBtn")} <ArrowRight size={20} className="rtl:rotate-180" />
           </button>
         </div>
       </form>
     </div>
   );
 }
+

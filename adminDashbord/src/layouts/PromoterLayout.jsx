@@ -1,5 +1,6 @@
 import { Outlet, Navigate, useLocation } from "react-router-dom";
 import PromoterSidebar from "../components/PromoterSidebar";
+import LanguageSwitcher from "../components/LanguageSwitcher";
 
 export default function PromoterLayout() {
   const location = useLocation();
@@ -19,3 +20,5 @@ export default function PromoterLayout() {
     </div>
   );
 }
+
+

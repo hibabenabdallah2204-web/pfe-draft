@@ -1,5 +1,6 @@
 import { Outlet, Navigate, useLocation } from "react-router-dom";
 import JudicialSidebar from "../components/JudicialSidebar";
+import LanguageSwitcher from "../components/LanguageSwitcher";
 
 export default function JudicialLayout() {
   const location = useLocation();
@@ -19,3 +20,5 @@ export default function JudicialLayout() {
     </div>
   );
 }
+
+

@@ -1,5 +1,6 @@
 import { Outlet } from "react-router-dom";
 import AdminSidebar from "../components/AdminSidebar";
+import LanguageSwitcher from "../components/LanguageSwitcher";
 
 export default function AdminLayout() {
   return (
@@ -13,3 +14,4 @@ export default function AdminLayout() {
     </div>
   );
 }
+
