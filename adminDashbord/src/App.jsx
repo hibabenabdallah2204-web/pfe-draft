@@ -2,6 +2,9 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import AdminLayout from "./layouts/AdminLayout";
 import PromoterLayout from "./layouts/PromoterLayout";
 import InvestorLayout from "./layouts/InvestorLayout";
+import FinanceLayout from "./layouts/FinanceLayout";
+import JudicialLayout from "./layouts/JudicialLayout";
+import SupportLayout from "./layouts/SupportLayout";
 
 import ProjectValidation from "./pages/ProjectValidation";
 import DisputeManagement from "./pages/DisputeManagement";
@@ -40,12 +43,30 @@ function App() {
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<Navigate to="project-validation" replace />} />
           <Route path="project-validation" element={<ProjectValidation />} />
-          <Route path="dispute-management" element={<DisputeManagement />} />
-          <Route path="platform-monitoring" element={<PlatformMonitoring />} />
-          <Route path="user-management" element={<UserManagement />} />
+          <Route path="audit-logs" element={<AuditLogs />} />
+          <Route path="logout" element={<LogoutPage />} />
+        </Route>
+
+        {/* --- Finance Manager Module --- */}
+        <Route path="/finance" element={<FinanceLayout />}>
+          <Route index element={<Navigate to="transactions" replace />} />
           <Route path="transactions" element={<AdminTransactions />} />
           <Route path="financials" element={<AdminFinancials />} />
-          <Route path="audit-logs" element={<AuditLogs />} />
+          <Route path="logout" element={<LogoutPage />} />
+        </Route>
+
+        {/* --- Judicial Agent Module --- */}
+        <Route path="/judicial" element={<JudicialLayout />}>
+          <Route index element={<Navigate to="disputes" replace />} />
+          <Route path="disputes" element={<DisputeManagement />} />
+          <Route path="logout" element={<LogoutPage />} />
+        </Route>
+
+        {/* --- Customer Support Module --- */}
+        <Route path="/support" element={<SupportLayout />}>
+          <Route index element={<Navigate to="user-management" replace />} />
+          <Route path="user-management" element={<UserManagement />} />
+          <Route path="platform-monitoring" element={<PlatformMonitoring />} />
           <Route path="logout" element={<LogoutPage />} />
         </Route>
 

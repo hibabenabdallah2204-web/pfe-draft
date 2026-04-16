@@ -166,8 +166,16 @@ export default function AuthPage() {
 
       if (data?.role === "Admin") {
         navigate("/admin/project-validation");
-      } else if (data?.role === "Real Estate Developer" || data?.role === "Real Estate Agent / Agency") {
+      } else if (data?.role === "Financial Manager (Gestionnaire Fin)") {
+        navigate("/finance/transactions");
+      } else if (data?.role === "Judicial Agent (Agent Judiciaire)") {
+        navigate("/judicial/disputes");
+      } else if (data?.role === "Customer Support (Support)") {
+        navigate("/support/user-management");
+      } else if (data?.role === "Promoter (Promoteur individuel)" || data?.role === "Real Estate Agency (Agence)") {
         navigate("/promoter");
+      } else if (data?.role === "Investor (Investisseur)") {
+        navigate("/investor");
       } else {
         navigate("/home");
       }
