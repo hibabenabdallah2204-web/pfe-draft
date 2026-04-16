@@ -22,8 +22,6 @@ const allowedRoles = [
   "Investor (Investisseur)",
   "Promoter (Promoteur individuel)",
   "Real Estate Agency (Agence)",
-  "KYC Verifier (Vérificateur KYC)",
-  "Auditor (Expert / Auditeur)",
   "Financial Manager (Gestionnaire Fin)",
   "Platform Manager (Gest Plat)",
   "Judicial Agent (Agent Judiciaire)",
@@ -204,8 +202,6 @@ export default function AuthPage() {
     const individualRoles = [
       "Visitor (Visiteur)",
       "Investor (Investisseur)",
-      "KYC Verifier (Vérificateur KYC)",
-      "Auditor (Expert / Auditeur)",
       "Financial Manager (Gestionnaire Fin)",
       "Platform Manager (Gest Plat)",
       "Judicial Agent (Agent Judiciaire)",
@@ -454,7 +450,7 @@ export default function AuthPage() {
                 </select>
               </FieldWrapper>
 
-              {["Visitor (Visiteur)", "Investor (Investisseur)", "KYC Verifier (Vérificateur KYC)", "Auditor (Expert / Auditeur)", "Financial Manager (Gestionnaire Fin)", "Platform Manager (Gest Plat)", "Judicial Agent (Agent Judiciaire)", "Customer Support (Support)"].includes(registerData.role) && (
+              {["Visitor (Visiteur)", "Investor (Investisseur)", "Financial Manager (Gestionnaire Fin)", "Platform Manager (Gest Plat)", "Judicial Agent (Agent Judiciaire)", "Customer Support (Support)"].includes(registerData.role) && (
                 <>
                   <FieldWrapper
                     label={t("auth.fullName")}
