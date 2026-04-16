@@ -201,7 +201,18 @@ export default function AuthPage() {
       return;
     }
 
-    if (registerData.role === "Normal User") {
+    const individualRoles = [
+      "Visitor (Visiteur)",
+      "Investor (Investisseur)",
+      "KYC Verifier (Vérificateur KYC)",
+      "Auditor (Expert / Auditeur)",
+      "Financial Manager (Gestionnaire Fin)",
+      "Platform Manager (Gest Plat)",
+      "Judicial Agent (Agent Judiciaire)",
+      "Customer Support (Support)"
+    ];
+
+    if (individualRoles.includes(registerData.role)) {
       if (
         !registerData.fullName.trim() ||
         !registerData.email.trim() ||
@@ -213,7 +224,7 @@ export default function AuthPage() {
       }
     }
 
-    if (registerData.role === "Real Estate Developer") {
+    if (registerData.role === "Promoter (Promoteur individuel)") {
       if (
         !registerData.fullName.trim() ||
         !registerData.companyName.trim() ||
@@ -227,7 +238,7 @@ export default function AuthPage() {
       }
     }
 
-    if (registerData.role === "Real Estate Agent / Agency") {
+    if (registerData.role === "Real Estate Agency (Agence)") {
       const requiredAgencyFields =
         registerData.agencyName.trim() &&
         registerData.managerName.trim() &&
@@ -261,7 +272,7 @@ export default function AuthPage() {
         formData.append(key, registerData[key]);
       });
 
-      if (registerData.role === "Real Estate Agent / Agency") {
+      if (registerData.role === "Real Estate Agency (Agence)") {
         Object.keys(agencyDocuments).forEach((key) => {
           if (agencyDocuments[key]) {
             formData.append(key, agencyDocuments[key]);
@@ -443,7 +454,7 @@ export default function AuthPage() {
                 </select>
               </FieldWrapper>
 
-              {registerData.role === "Normal User" && (
+              {["Visitor (Visiteur)", "Investor (Investisseur)", "KYC Verifier (Vérificateur KYC)", "Auditor (Expert / Auditeur)", "Financial Manager (Gestionnaire Fin)", "Platform Manager (Gest Plat)", "Judicial Agent (Agent Judiciaire)", "Customer Support (Support)"].includes(registerData.role) && (
                 <>
                   <FieldWrapper
                     label={t("auth.fullName")}
@@ -515,7 +526,7 @@ export default function AuthPage() {
                 </>
               )}
 
-              {registerData.role === "Real Estate Developer" && (
+              {registerData.role === "Promoter (Promoteur individuel)" && (
                 <>
                   <FieldWrapper
                     label="Full Name"
@@ -621,7 +632,7 @@ export default function AuthPage() {
                 </>
               )}
 
-              {registerData.role === "Real Estate Agent / Agency" && (
+              {registerData.role === "Real Estate Agency (Agence)" && (
                 <>
                   <FieldWrapper
                     label="Agency Name"
